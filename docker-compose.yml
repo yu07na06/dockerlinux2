@@ -1,0 +1,35 @@
+version: "3.3"
+
+services: 
+ db:
+    image: mysql:latest
+    container_name: mydb
+    volumes:
+      - ./db/data:/var/lib/mysql
+      - ./mysql-dump:/docker-entrypoint-initdb.d
+    environment:
+      MYSQL_ROOT_PASSWORD: 1
+      MYSQL_DATABASE: sys
+      LC_ALL: C.UTF-8
+    ports:
+      - '49180:3306'
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+
+ web:
+    image: tomcat:9
+    volumes:
+      - ./target/ROOT.war:/usr/local/tomcat/webapps/ROOT.war
+    depends_on:
+      - db
+    environment:
+      MYSQL_DATABASE_URL: jdbc:mysql://mydb:3306/db01
+      MYSQL_USER: root
+      MYSQL_PASSWORD: 1
+    ports:
+      - '10000:8080'
+
+
+
+
